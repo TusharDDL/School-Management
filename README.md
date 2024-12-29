@@ -67,8 +67,8 @@ school-management-system/
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/school-management-system.git
-   cd school-management-system
+   git clone https://github.com/TusharDDL/School-Management.git
+   cd School-Management
    ```
 
 2. Create environment files:
