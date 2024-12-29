@@ -1,115 +1,110 @@
 'use client'
 
-import { useQuery } from '@tanstack/react-query'
-import academicService from '@/services/academic'
-import { useAuth } from '@/lib/auth'
+import { Card } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import {
+  BookOpen,
+  FileText,
+  GraduationCap,
+  Calendar,
+  Library,
+  PenTool,
+  ClipboardList,
+} from 'lucide-react'
+import Link from 'next/link'
 
-export default function AcademicOverviewPage() {
-  const { user } = useAuth()
+const academicModules = [
+  {
+    title: 'Curriculum',
+    description: 'Manage and organize course curriculum',
+    icon: BookOpen,
+    href: '/academic/curriculum',
+    color: 'bg-blue-500',
+  },
+  {
+    title: 'Lesson Plans',
+    description: 'Create and track lesson plans',
+    icon: FileText,
+    href: '/academic/lessons',
+    color: 'bg-green-500',
+  },
+  {
+    title: 'Assignments',
+    description: 'Manage homework and assignments',
+    icon: PenTool,
+    href: '/academic/assignments',
+    color: 'bg-purple-500',
+  },
+  {
+    title: 'Examinations',
+    description: 'Conduct and manage examinations',
+    icon: ClipboardList,
+    href: '/academic/exams',
+    color: 'bg-red-500',
+  },
+  {
+    title: 'Grade Book',
+    description: 'Record and manage student grades',
+    icon: GraduationCap,
+    href: '/academic/gradebook',
+    color: 'bg-yellow-500',
+  },
+  {
+    title: 'Calendar',
+    description: 'Academic calendar and events',
+    icon: Calendar,
+    href: '/academic/calendar',
+    color: 'bg-pink-500',
+  },
+  {
+    title: 'Resources',
+    description: 'Educational resources and materials',
+    icon: Library,
+    href: '/academic/resources',
+    color: 'bg-indigo-500',
+  },
+]
 
-  const { data: sections } = useQuery({
-    queryKey: ['sections'],
-    queryFn: academicService.getSections,
-  })
-
-  const { data: subjects } = useQuery({
-    queryKey: ['subjects'],
-    queryFn: academicService.getSubjects,
-  })
-
-  const { data: assignments } = useQuery({
-    queryKey: ['assignments'],
-    queryFn: academicService.getAssignments,
-  })
-
-  const { data: assessments } = useQuery({
-    queryKey: ['assessments'],
-    queryFn: academicService.getAssessments,
-  })
-
+export default function AcademicPage() {
   return (
     <div className="container mx-auto py-6">
-      <h1 className="text-2xl font-bold mb-6">Academic Overview</h1>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {/* Classes & Sections */}
-        <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-lg font-semibold mb-2">Classes & Sections</h2>
-          <p className="text-3xl font-bold text-blue-600">
-            {sections?.length || 0}
-          </p>
-          <p className="text-sm text-gray-500">Total sections</p>
-        </div>
-
-        {/* Subjects */}
-        <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-lg font-semibold mb-2">Subjects</h2>
-          <p className="text-3xl font-bold text-green-600">
-            {subjects?.length || 0}
-          </p>
-          <p className="text-sm text-gray-500">Total subjects</p>
-        </div>
-
-        {/* Assignments */}
-        <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-lg font-semibold mb-2">Assignments</h2>
-          <p className="text-3xl font-bold text-purple-600">
-            {assignments?.length || 0}
-          </p>
-          <p className="text-sm text-gray-500">Active assignments</p>
-        </div>
-
-        {/* Assessments */}
-        <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-lg font-semibold mb-2">Assessments</h2>
-          <p className="text-3xl font-bold text-yellow-600">
-            {assessments?.length || 0}
-          </p>
-          <p className="text-sm text-gray-500">Total assessments</p>
-        </div>
+      <div className="mb-6">
+        <h1 className="text-2xl font-bold">Academic Management</h1>
+        <p className="text-gray-500">
+          Manage curriculum, lessons, assignments, and more
+        </p>
       </div>
 
-      {/* Recent Activity */}
-      <div className="mt-8">
-        <h2 className="text-xl font-semibold mb-4">Recent Activity</h2>
-        <div className="bg-white rounded-lg shadow overflow-hidden">
-          <div className="p-6">
-            <p className="text-gray-500">No recent activity</p>
-          </div>
-        </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {academicModules.map((module) => (
+          <Link key={module.title} href={module.href}>
+            <Card className="p-6 hover:shadow-lg transition-shadow cursor-pointer">
+              <div className="flex items-start space-x-4">
+                <div
+                  className={`${module.color} p-3 rounded-lg text-white`}
+                >
+                  <module.icon className="h-6 w-6" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="font-semibold mb-1">{module.title}</h3>
+                  <p className="text-sm text-gray-500">
+                    {module.description}
+                  </p>
+                </div>
+              </div>
+            </Card>
+          </Link>
+        ))}
       </div>
 
       {/* Quick Actions */}
       <div className="mt-8">
-        <h2 className="text-xl font-semibold mb-4">Quick Actions</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {user?.role === 'teacher' && (
-            <>
-              <button className="p-4 bg-blue-50 rounded-lg text-blue-700 hover:bg-blue-100 transition-colors">
-                Take Attendance
-              </button>
-              <button className="p-4 bg-green-50 rounded-lg text-green-700 hover:bg-green-100 transition-colors">
-                Create Assignment
-              </button>
-              <button className="p-4 bg-purple-50 rounded-lg text-purple-700 hover:bg-purple-100 transition-colors">
-                Schedule Assessment
-              </button>
-            </>
-          )}
-
-          {user?.role === 'student' && (
-            <>
-              <button className="p-4 bg-blue-50 rounded-lg text-blue-700 hover:bg-blue-100 transition-colors">
-                View Attendance
-              </button>
-              <button className="p-4 bg-green-50 rounded-lg text-green-700 hover:bg-green-100 transition-colors">
-                View Assignments
-              </button>
-              <button className="p-4 bg-purple-50 rounded-lg text-purple-700 hover:bg-purple-100 transition-colors">
-                View Results
-              </button>
-            </>
-          )}
+        <h2 className="text-lg font-semibold mb-4">Quick Actions</h2>
+        <div className="flex flex-wrap gap-2">
+          <Button>Create Lesson Plan</Button>
+          <Button variant="outline">Add Assignment</Button>
+          <Button variant="outline">Schedule Exam</Button>
+          <Button variant="outline">View Calendar</Button>
         </div>
       </div>
     </div>

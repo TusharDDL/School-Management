@@ -60,85 +60,94 @@ import {
   Eye,
 } from 'lucide-react'
 
-const assignmentSchema = z.object({
+const examSchema = z.object({
+  title: z.string().min(1, 'Title is required'),
+  type: z.string().min(1, 'Exam type is required'),
   class: z.string().min(1, 'Class is required'),
   subject: z.string().min(1, 'Subject is required'),
-  title: z.string().min(1, 'Title is required'),
-  description: z.string().min(1, 'Description is required'),
-  due_date: z.date({
-    required_error: 'Due date is required',
+  date: z.date({
+    required_error: 'Date is required',
   }),
+  start_time: z.string().min(1, 'Start time is required'),
+  duration: z.string().min(1, 'Duration is required'),
   max_marks: z.string().min(1, 'Maximum marks is required'),
   instructions: z.string().min(1, 'Instructions are required'),
-  attachments: z.any().optional(),
+  syllabus: z.string().min(1, 'Syllabus is required'),
+  venue: z.string().min(1, 'Venue is required'),
 })
 
-type AssignmentFormData = z.infer<typeof assignmentSchema>
+type ExamFormData = z.infer<typeof examSchema>
 
-export default function AssignmentsPage() {
+export default function ExamsPage() {
   const { toast } = useToast()
   const [isDialogOpen, setIsDialogOpen] = useState(false)
-  const [selectedAssignment, setSelectedAssignment] = useState<any>(null)
+  const [selectedExam, setSelectedExam] = useState<any>(null)
 
-  const form = useForm<AssignmentFormData>({
-    resolver: zodResolver(assignmentSchema),
+  const form = useForm<ExamFormData>({
+    resolver: zodResolver(examSchema),
     defaultValues: {
+      title: '',
+      type: '',
       class: '',
       subject: '',
-      title: '',
-      description: '',
+      start_time: '',
+      duration: '',
       max_marks: '',
       instructions: '',
+      syllabus: '',
+      venue: '',
     },
   })
 
-  // Get assignments data
-  const { data: assignmentsData, isLoading } = useQuery({
-    queryKey: ['assignments'],
+  // Get exams data
+  const { data: examsData, isLoading } = useQuery({
+    queryKey: ['exams'],
     queryFn: () => {
       // This would be replaced with an actual API call
       return Promise.resolve([
         {
           id: 1,
+          title: 'Mid-Term Mathematics',
+          type: 'Mid Term',
           class: 'Class 10',
           subject: 'Mathematics',
-          title: 'Quadratic Equations Practice',
-          description: 'Solve the given set of quadratic equations',
-          due_date: '2024-01-20',
-          max_marks: '50',
-          instructions: '- Show all working steps\n- Write neat and clear\n- Submit in PDF format',
-          attachments: ['worksheet.pdf'],
-          status: 'active',
-          submissions: 15,
-          total_students: 30,
+          date: '2024-02-15',
+          start_time: '09:00',
+          duration: '3 hours',
+          max_marks: '100',
+          instructions: '- Use blue/black pen\n- All questions are compulsory',
+          syllabus: 'Chapter 1-5',
+          venue: 'Main Hall',
+          status: 'scheduled',
         },
         {
           id: 2,
+          title: 'Science Unit Test',
+          type: 'Unit Test',
           class: 'Class 10',
           subject: 'Science',
-          title: 'Lab Report: Chemical Reactions',
-          description: 'Write a detailed lab report on the chemical reactions experiment',
-          due_date: '2024-01-22',
-          max_marks: '100',
-          instructions: '- Include observations\n- Add diagrams\n- Cite references',
-          attachments: ['lab_template.docx'],
+          date: '2024-02-20',
+          start_time: '10:30',
+          duration: '1.5 hours',
+          max_marks: '50',
+          instructions: '- Write neat and clear\n- Show all working',
+          syllabus: 'Chapter 3-4',
+          venue: 'Room 101',
           status: 'draft',
-          submissions: 0,
-          total_students: 30,
         },
       ])
     },
   })
 
-  const { mutate: saveAssignment, isLoading: isSaving } = useMutation({
-    mutationFn: (data: AssignmentFormData) => {
+  const { mutate: saveExam, isLoading: isSaving } = useMutation({
+    mutationFn: (data: ExamFormData) => {
       // This would be replaced with an actual API call
       return new Promise((resolve) => setTimeout(resolve, 1000))
     },
     onSuccess: () => {
       toast({
         title: 'Success',
-        description: 'Assignment saved successfully.',
+        description: 'Exam saved successfully.',
       })
       setIsDialogOpen(false)
       form.reset()
@@ -146,26 +155,30 @@ export default function AssignmentsPage() {
     onError: () => {
       toast({
         title: 'Error',
-        description: 'Failed to save assignment.',
+        description: 'Failed to save exam.',
         variant: 'destructive',
       })
     },
   })
 
-  const onSubmit = (data: AssignmentFormData) => {
-    saveAssignment(data)
+  const onSubmit = (data: ExamFormData) => {
+    saveExam(data)
   }
 
-  const handleEdit = (assignment: any) => {
-    setSelectedAssignment(assignment)
+  const handleEdit = (exam: any) => {
+    setSelectedExam(exam)
     form.reset({
-      class: assignment.class,
-      subject: assignment.subject,
-      title: assignment.title,
-      description: assignment.description,
-      due_date: new Date(assignment.due_date),
-      max_marks: assignment.max_marks,
-      instructions: assignment.instructions,
+      title: exam.title,
+      type: exam.type,
+      class: exam.class,
+      subject: exam.subject,
+      date: new Date(exam.date),
+      start_time: exam.start_time,
+      duration: exam.duration,
+      max_marks: exam.max_marks,
+      instructions: exam.instructions,
+      syllabus: exam.syllabus,
+      venue: exam.venue,
     })
     setIsDialogOpen(true)
   }
@@ -174,38 +187,33 @@ export default function AssignmentsPage() {
     // This would be replaced with an actual API call
     toast({
       title: 'Success',
-      description: 'Assignment deleted successfully.',
+      description: 'Exam deleted successfully.',
     })
-  }
-
-  const handleViewSubmissions = (id: number) => {
-    // This would be replaced with navigation to submissions page
-    console.log('View submissions for assignment:', id)
   }
 
   return (
     <div className="container mx-auto py-6">
       <div className="flex justify-between items-center mb-6">
         <div>
-          <h1 className="text-2xl font-bold">Assignments</h1>
+          <h1 className="text-2xl font-bold">Examinations</h1>
           <p className="text-gray-500">
-            Create and manage assignments
+            Schedule and manage examinations
           </p>
         </div>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
             <Button>
               <Plus className="h-4 w-4 mr-2" />
-              Add Assignment
+              Schedule Exam
             </Button>
           </DialogTrigger>
           <DialogContent className="max-w-2xl">
             <DialogHeader>
               <DialogTitle>
-                {selectedAssignment ? 'Edit' : 'Add'} Assignment
+                {selectedExam ? 'Edit' : 'Schedule'} Exam
               </DialogTitle>
               <DialogDescription>
-                Create or modify assignment details
+                Create or modify exam details
               </DialogDescription>
             </DialogHeader>
 
@@ -214,7 +222,54 @@ export default function AssignmentsPage() {
                 onSubmit={form.handleSubmit(onSubmit)}
                 className="space-y-4"
               >
+                <FormField
+                  control={form.control}
+                  name="title"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Title</FormLabel>
+                      <FormControl>
+                        <Input {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
                 <div className="grid grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="type"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Exam Type</FormLabel>
+                        <Select
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                        >
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select type" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {[
+                              'Unit Test',
+                              'Mid Term',
+                              'Final Term',
+                              'Practice Test',
+                            ].map((type) => (
+                              <SelectItem key={type} value={type}>
+                                {type}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
                   <FormField
                     control={form.control}
                     name="class"
@@ -245,80 +300,49 @@ export default function AssignmentsPage() {
                       </FormItem>
                     )}
                   />
-
-                  <FormField
-                    control={form.control}
-                    name="subject"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Subject</FormLabel>
-                        <Select
-                          onValueChange={field.onChange}
-                          defaultValue={field.value}
-                        >
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select subject" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            {[
-                              'Mathematics',
-                              'Science',
-                              'English',
-                              'History',
-                              'Geography',
-                            ].map((subject) => (
-                              <SelectItem
-                                key={subject}
-                                value={subject}
-                              >
-                                {subject}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
                 </div>
 
                 <FormField
                   control={form.control}
-                  name="title"
+                  name="subject"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Title</FormLabel>
-                      <FormControl>
-                        <Input {...field} />
-                      </FormControl>
+                      <FormLabel>Subject</FormLabel>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select subject" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {[
+                            'Mathematics',
+                            'Science',
+                            'English',
+                            'History',
+                            'Geography',
+                          ].map((subject) => (
+                            <SelectItem key={subject} value={subject}>
+                              {subject}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
 
-                <FormField
-                  control={form.control}
-                  name="description"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Description</FormLabel>
-                      <FormControl>
-                        <Textarea {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-3 gap-4">
                   <FormField
                     control={form.control}
-                    name="due_date"
+                    name="date"
                     render={({ field }) => (
                       <FormItem className="flex flex-col">
-                        <FormLabel>Due Date</FormLabel>
+                        <FormLabel>Date</FormLabel>
                         <Popover>
                           <PopoverTrigger asChild>
                             <FormControl>
@@ -356,6 +380,59 @@ export default function AssignmentsPage() {
 
                   <FormField
                     control={form.control}
+                    name="start_time"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Start Time</FormLabel>
+                        <FormControl>
+                          <Input {...field} type="time" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="duration"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Duration</FormLabel>
+                        <Select
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                        >
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select duration" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {[
+                              '1 hour',
+                              '1.5 hours',
+                              '2 hours',
+                              '2.5 hours',
+                              '3 hours',
+                            ].map((duration) => (
+                              <SelectItem
+                                key={duration}
+                                value={duration}
+                              >
+                                {duration}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
                     name="max_marks"
                     render={({ field }) => (
                       <FormItem>
@@ -367,7 +444,38 @@ export default function AssignmentsPage() {
                       </FormItem>
                     )}
                   />
+
+                  <FormField
+                    control={form.control}
+                    name="venue"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Venue</FormLabel>
+                        <FormControl>
+                          <Input {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
                 </div>
+
+                <FormField
+                  control={form.control}
+                  name="syllabus"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Syllabus</FormLabel>
+                      <FormControl>
+                        <Textarea {...field} />
+                      </FormControl>
+                      <FormDescription>
+                        List the topics and chapters to be covered
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
                 <FormField
                   control={form.control}
@@ -380,27 +488,6 @@ export default function AssignmentsPage() {
                       </FormControl>
                       <FormDescription>
                         Enter each instruction on a new line
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="attachments"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Attachments</FormLabel>
-                      <FormControl>
-                        <Input
-                          type="file"
-                          multiple
-                          onChange={(e) => field.onChange(e.target.files)}
-                        />
-                      </FormControl>
-                      <FormDescription>
-                        Upload any supporting documents
                       </FormDescription>
                       <FormMessage />
                     </FormItem>
@@ -431,35 +518,39 @@ export default function AssignmentsPage() {
             <TableHeader>
               <TableRow>
                 <TableHead>Title</TableHead>
+                <TableHead>Type</TableHead>
                 <TableHead>Class</TableHead>
                 <TableHead>Subject</TableHead>
-                <TableHead>Due Date</TableHead>
-                <TableHead>Submissions</TableHead>
+                <TableHead>Date & Time</TableHead>
+                <TableHead>Duration</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {assignmentsData?.map((assignment) => (
-                <TableRow key={assignment.id}>
-                  <TableCell>{assignment.title}</TableCell>
-                  <TableCell>{assignment.class}</TableCell>
-                  <TableCell>{assignment.subject}</TableCell>
+              {examsData?.map((exam) => (
+                <TableRow key={exam.id}>
+                  <TableCell>{exam.title}</TableCell>
+                  <TableCell>{exam.type}</TableCell>
+                  <TableCell>{exam.class}</TableCell>
+                  <TableCell>{exam.subject}</TableCell>
                   <TableCell>
-                    {format(new Date(assignment.due_date), 'PPP')}
+                    {format(new Date(exam.date), 'PPP')}
+                    <br />
+                    <span className="text-sm text-gray-500">
+                      {exam.start_time}
+                    </span>
                   </TableCell>
-                  <TableCell>
-                    {assignment.submissions} / {assignment.total_students}
-                  </TableCell>
+                  <TableCell>{exam.duration}</TableCell>
                   <TableCell>
                     <span
                       className={`px-2 py-1 rounded-full text-xs ${
-                        assignment.status === 'active'
+                        exam.status === 'scheduled'
                           ? 'bg-green-100 text-green-700'
                           : 'bg-yellow-100 text-yellow-700'
                       }`}
                     >
-                      {assignment.status}
+                      {exam.status}
                     </span>
                   </TableCell>
                   <TableCell>
@@ -467,21 +558,14 @@ export default function AssignmentsPage() {
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => handleViewSubmissions(assignment.id)}
-                      >
-                        <Eye className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleEdit(assignment)}
+                        onClick={() => handleEdit(exam)}
                       >
                         <FileEdit className="h-4 w-4" />
                       </Button>
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => handleDelete(assignment.id)}
+                        onClick={() => handleDelete(exam.id)}
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>

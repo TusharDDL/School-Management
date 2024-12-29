@@ -50,51 +50,48 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
 import { format } from 'date-fns'
-import {
-  Plus,
-  FileEdit,
-  Trash2,
-  Calendar as CalendarIcon,
-  FileUp,
-  Download,
-  Eye,
-} from 'lucide-react'
+import { Plus, FileEdit, Trash2, Calendar as CalendarIcon } from 'lucide-react'
 
-const assignmentSchema = z.object({
+const lessonSchema = z.object({
   class: z.string().min(1, 'Class is required'),
   subject: z.string().min(1, 'Subject is required'),
-  title: z.string().min(1, 'Title is required'),
-  description: z.string().min(1, 'Description is required'),
-  due_date: z.date({
-    required_error: 'Due date is required',
+  topic: z.string().min(1, 'Topic is required'),
+  date: z.date({
+    required_error: 'Date is required',
   }),
-  max_marks: z.string().min(1, 'Maximum marks is required'),
-  instructions: z.string().min(1, 'Instructions are required'),
-  attachments: z.any().optional(),
+  duration: z.string().min(1, 'Duration is required'),
+  objectives: z.string().min(1, 'Learning objectives are required'),
+  activities: z.string().min(1, 'Activities are required'),
+  resources: z.string().optional(),
+  homework: z.string().optional(),
+  assessment: z.string().min(1, 'Assessment criteria is required'),
 })
 
-type AssignmentFormData = z.infer<typeof assignmentSchema>
+type LessonFormData = z.infer<typeof lessonSchema>
 
-export default function AssignmentsPage() {
+export default function LessonsPage() {
   const { toast } = useToast()
   const [isDialogOpen, setIsDialogOpen] = useState(false)
-  const [selectedAssignment, setSelectedAssignment] = useState<any>(null)
+  const [selectedLesson, setSelectedLesson] = useState<any>(null)
 
-  const form = useForm<AssignmentFormData>({
-    resolver: zodResolver(assignmentSchema),
+  const form = useForm<LessonFormData>({
+    resolver: zodResolver(lessonSchema),
     defaultValues: {
       class: '',
       subject: '',
-      title: '',
-      description: '',
-      max_marks: '',
-      instructions: '',
+      topic: '',
+      duration: '',
+      objectives: '',
+      activities: '',
+      resources: '',
+      homework: '',
+      assessment: '',
     },
   })
 
-  // Get assignments data
-  const { data: assignmentsData, isLoading } = useQuery({
-    queryKey: ['assignments'],
+  // Get lessons data
+  const { data: lessonsData, isLoading } = useQuery({
+    queryKey: ['lessons'],
     queryFn: () => {
       // This would be replaced with an actual API call
       return Promise.resolve([
@@ -102,43 +99,43 @@ export default function AssignmentsPage() {
           id: 1,
           class: 'Class 10',
           subject: 'Mathematics',
-          title: 'Quadratic Equations Practice',
-          description: 'Solve the given set of quadratic equations',
-          due_date: '2024-01-20',
-          max_marks: '50',
-          instructions: '- Show all working steps\n- Write neat and clear\n- Submit in PDF format',
-          attachments: ['worksheet.pdf'],
-          status: 'active',
-          submissions: 15,
-          total_students: 30,
+          topic: 'Quadratic Equations',
+          date: '2024-01-15',
+          duration: '45 minutes',
+          objectives: '- Understand quadratic equations\n- Solve using factorization\n- Apply in real-world problems',
+          activities: 'Interactive examples, Group problem-solving',
+          resources: 'Textbook, Online calculator',
+          homework: 'Practice problems: Page 45-46',
+          assessment: 'Class participation, Homework review',
+          status: 'upcoming',
         },
         {
           id: 2,
           class: 'Class 10',
           subject: 'Science',
-          title: 'Lab Report: Chemical Reactions',
-          description: 'Write a detailed lab report on the chemical reactions experiment',
-          due_date: '2024-01-22',
-          max_marks: '100',
-          instructions: '- Include observations\n- Add diagrams\n- Cite references',
-          attachments: ['lab_template.docx'],
-          status: 'draft',
-          submissions: 0,
-          total_students: 30,
+          topic: 'Chemical Reactions',
+          date: '2024-01-16',
+          duration: '60 minutes',
+          objectives: '- Types of reactions\n- Balancing equations\n- Lab safety',
+          activities: 'Lab demonstration, Worksheet',
+          resources: 'Lab equipment, Safety gear',
+          homework: 'Lab report preparation',
+          assessment: 'Lab performance, Report quality',
+          status: 'completed',
         },
       ])
     },
   })
 
-  const { mutate: saveAssignment, isLoading: isSaving } = useMutation({
-    mutationFn: (data: AssignmentFormData) => {
+  const { mutate: saveLesson, isLoading: isSaving } = useMutation({
+    mutationFn: (data: LessonFormData) => {
       // This would be replaced with an actual API call
       return new Promise((resolve) => setTimeout(resolve, 1000))
     },
     onSuccess: () => {
       toast({
         title: 'Success',
-        description: 'Assignment saved successfully.',
+        description: 'Lesson plan saved successfully.',
       })
       setIsDialogOpen(false)
       form.reset()
@@ -146,26 +143,29 @@ export default function AssignmentsPage() {
     onError: () => {
       toast({
         title: 'Error',
-        description: 'Failed to save assignment.',
+        description: 'Failed to save lesson plan.',
         variant: 'destructive',
       })
     },
   })
 
-  const onSubmit = (data: AssignmentFormData) => {
-    saveAssignment(data)
+  const onSubmit = (data: LessonFormData) => {
+    saveLesson(data)
   }
 
-  const handleEdit = (assignment: any) => {
-    setSelectedAssignment(assignment)
+  const handleEdit = (lesson: any) => {
+    setSelectedLesson(lesson)
     form.reset({
-      class: assignment.class,
-      subject: assignment.subject,
-      title: assignment.title,
-      description: assignment.description,
-      due_date: new Date(assignment.due_date),
-      max_marks: assignment.max_marks,
-      instructions: assignment.instructions,
+      class: lesson.class,
+      subject: lesson.subject,
+      topic: lesson.topic,
+      date: new Date(lesson.date),
+      duration: lesson.duration,
+      objectives: lesson.objectives,
+      activities: lesson.activities,
+      resources: lesson.resources,
+      homework: lesson.homework,
+      assessment: lesson.assessment,
     })
     setIsDialogOpen(true)
   }
@@ -174,38 +174,33 @@ export default function AssignmentsPage() {
     // This would be replaced with an actual API call
     toast({
       title: 'Success',
-      description: 'Assignment deleted successfully.',
+      description: 'Lesson plan deleted successfully.',
     })
-  }
-
-  const handleViewSubmissions = (id: number) => {
-    // This would be replaced with navigation to submissions page
-    console.log('View submissions for assignment:', id)
   }
 
   return (
     <div className="container mx-auto py-6">
       <div className="flex justify-between items-center mb-6">
         <div>
-          <h1 className="text-2xl font-bold">Assignments</h1>
+          <h1 className="text-2xl font-bold">Lesson Plans</h1>
           <p className="text-gray-500">
-            Create and manage assignments
+            Create and manage lesson plans
           </p>
         </div>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
             <Button>
               <Plus className="h-4 w-4 mr-2" />
-              Add Assignment
+              Add Lesson Plan
             </Button>
           </DialogTrigger>
           <DialogContent className="max-w-2xl">
             <DialogHeader>
               <DialogTitle>
-                {selectedAssignment ? 'Edit' : 'Add'} Assignment
+                {selectedLesson ? 'Edit' : 'Add'} Lesson Plan
               </DialogTitle>
               <DialogDescription>
-                Create or modify assignment details
+                Create or modify lesson plan details
               </DialogDescription>
             </DialogHeader>
 
@@ -286,26 +281,12 @@ export default function AssignmentsPage() {
 
                 <FormField
                   control={form.control}
-                  name="title"
+                  name="topic"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Title</FormLabel>
+                      <FormLabel>Topic</FormLabel>
                       <FormControl>
                         <Input {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="description"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Description</FormLabel>
-                      <FormControl>
-                        <Textarea {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -315,10 +296,10 @@ export default function AssignmentsPage() {
                 <div className="grid grid-cols-2 gap-4">
                   <FormField
                     control={form.control}
-                    name="due_date"
+                    name="date"
                     render={({ field }) => (
                       <FormItem className="flex flex-col">
-                        <FormLabel>Due Date</FormLabel>
+                        <FormLabel>Date</FormLabel>
                         <Popover>
                           <PopoverTrigger asChild>
                             <FormControl>
@@ -356,13 +337,36 @@ export default function AssignmentsPage() {
 
                   <FormField
                     control={form.control}
-                    name="max_marks"
+                    name="duration"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Maximum Marks</FormLabel>
-                        <FormControl>
-                          <Input {...field} type="number" min="0" />
-                        </FormControl>
+                        <FormLabel>Duration</FormLabel>
+                        <Select
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                        >
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select duration" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {[
+                              '30 minutes',
+                              '45 minutes',
+                              '60 minutes',
+                              '90 minutes',
+                              '120 minutes',
+                            ].map((duration) => (
+                              <SelectItem
+                                key={duration}
+                                value={duration}
+                              >
+                                {duration}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -371,15 +375,15 @@ export default function AssignmentsPage() {
 
                 <FormField
                   control={form.control}
-                  name="instructions"
+                  name="objectives"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Instructions</FormLabel>
+                      <FormLabel>Learning Objectives</FormLabel>
                       <FormControl>
                         <Textarea {...field} />
                       </FormControl>
                       <FormDescription>
-                        Enter each instruction on a new line
+                        Enter each objective on a new line
                       </FormDescription>
                       <FormMessage />
                     </FormItem>
@@ -388,19 +392,66 @@ export default function AssignmentsPage() {
 
                 <FormField
                   control={form.control}
-                  name="attachments"
+                  name="activities"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Attachments</FormLabel>
+                      <FormLabel>Activities</FormLabel>
                       <FormControl>
-                        <Input
-                          type="file"
-                          multiple
-                          onChange={(e) => field.onChange(e.target.files)}
-                        />
+                        <Textarea {...field} />
                       </FormControl>
                       <FormDescription>
-                        Upload any supporting documents
+                        List the planned activities and teaching methods
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="resources"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Resources</FormLabel>
+                      <FormControl>
+                        <Textarea {...field} />
+                      </FormControl>
+                      <FormDescription>
+                        List any required materials or resources
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="homework"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Homework</FormLabel>
+                      <FormControl>
+                        <Textarea {...field} />
+                      </FormControl>
+                      <FormDescription>
+                        Specify any homework assignments
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="assessment"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Assessment</FormLabel>
+                      <FormControl>
+                        <Textarea {...field} />
+                      </FormControl>
+                      <FormDescription>
+                        Describe how student learning will be assessed
                       </FormDescription>
                       <FormMessage />
                     </FormItem>
@@ -430,36 +481,34 @@ export default function AssignmentsPage() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Title</TableHead>
+                <TableHead>Date</TableHead>
                 <TableHead>Class</TableHead>
                 <TableHead>Subject</TableHead>
-                <TableHead>Due Date</TableHead>
-                <TableHead>Submissions</TableHead>
+                <TableHead>Topic</TableHead>
+                <TableHead>Duration</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {assignmentsData?.map((assignment) => (
-                <TableRow key={assignment.id}>
-                  <TableCell>{assignment.title}</TableCell>
-                  <TableCell>{assignment.class}</TableCell>
-                  <TableCell>{assignment.subject}</TableCell>
+              {lessonsData?.map((lesson) => (
+                <TableRow key={lesson.id}>
                   <TableCell>
-                    {format(new Date(assignment.due_date), 'PPP')}
+                    {format(new Date(lesson.date), 'PPP')}
                   </TableCell>
-                  <TableCell>
-                    {assignment.submissions} / {assignment.total_students}
-                  </TableCell>
+                  <TableCell>{lesson.class}</TableCell>
+                  <TableCell>{lesson.subject}</TableCell>
+                  <TableCell>{lesson.topic}</TableCell>
+                  <TableCell>{lesson.duration}</TableCell>
                   <TableCell>
                     <span
                       className={`px-2 py-1 rounded-full text-xs ${
-                        assignment.status === 'active'
-                          ? 'bg-green-100 text-green-700'
-                          : 'bg-yellow-100 text-yellow-700'
+                        lesson.status === 'upcoming'
+                          ? 'bg-blue-100 text-blue-700'
+                          : 'bg-green-100 text-green-700'
                       }`}
                     >
-                      {assignment.status}
+                      {lesson.status}
                     </span>
                   </TableCell>
                   <TableCell>
@@ -467,21 +516,14 @@ export default function AssignmentsPage() {
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => handleViewSubmissions(assignment.id)}
-                      >
-                        <Eye className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleEdit(assignment)}
+                        onClick={() => handleEdit(lesson)}
                       >
                         <FileEdit className="h-4 w-4" />
                       </Button>
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => handleDelete(assignment.id)}
+                        onClick={() => handleDelete(lesson.id)}
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>
