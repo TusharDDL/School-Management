@@ -1,6 +1,7 @@
 from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
 
+
 def test_login_success(client: TestClient):
     response = client.post(
         "/api/v1/auth/login",
@@ -11,6 +12,7 @@ def test_login_success(client: TestClient):
     assert "access_token" in data
     assert data["token_type"] == "bearer"
 
+
 def test_login_wrong_password(client: TestClient):
     response = client.post(
         "/api/v1/auth/login",
@@ -18,6 +20,7 @@ def test_login_wrong_password(client: TestClient):
     )
     assert response.status_code == 401
     assert response.json()["detail"] == "Incorrect username or password"
+
 
 def test_register_success(client: TestClient):
     response = client.post(
@@ -37,6 +40,7 @@ def test_register_success(client: TestClient):
     assert data["username"] == "newuser"
     assert data["role"] == "student"
 
+
 def test_register_duplicate_email(client: TestClient):
     response = client.post(
         "/api/v1/auth/register",
@@ -52,6 +56,7 @@ def test_register_duplicate_email(client: TestClient):
     assert response.status_code == 400
     assert "already exists" in response.json()["detail"]
 
+
 def test_me_endpoint(client: TestClient, admin_token: str):
     response = client.get(
         "/api/v1/auth/me",
@@ -62,6 +67,7 @@ def test_me_endpoint(client: TestClient, admin_token: str):
     assert data["email"] == "admin@test.com"
     assert data["username"] == "admin"
     assert data["role"] == "admin"
+
 
 def test_me_endpoint_no_token(client: TestClient):
     response = client.get("/api/v1/auth/me")

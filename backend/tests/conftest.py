@@ -21,6 +21,7 @@ engine = create_engine(
 )
 TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
+
 @pytest.fixture(scope="session")
 def db() -> Generator:
     Base.metadata.create_all(bind=engine)
@@ -31,6 +32,7 @@ def db() -> Generator:
         db.close()
         Base.metadata.drop_all(bind=engine)
 
+
 @pytest.fixture(scope="session")
 def client(db: TestingSessionLocal) -> Generator:
     def override_get_db():
@@ -38,10 +40,11 @@ def client(db: TestingSessionLocal) -> Generator:
             yield db
         finally:
             pass
-    
+
     app.dependency_overrides[get_db] = override_get_db
     with TestClient(app) as c:
         yield c
+
 
 @pytest.fixture(scope="session")
 def admin_token(client: TestClient, db: TestingSessionLocal) -> str:
@@ -66,6 +69,7 @@ def admin_token(client: TestClient, db: TestingSessionLocal) -> str:
     )
     return response.json()["access_token"]
 
+
 @pytest.fixture(scope="session")
 def teacher_token(client: TestClient, db: TestingSessionLocal) -> str:
     # Create teacher user
@@ -89,6 +93,7 @@ def teacher_token(client: TestClient, db: TestingSessionLocal) -> str:
     )
     return response.json()["access_token"]
 
+
 @pytest.fixture(scope="session")
 def student_token(client: TestClient, db: TestingSessionLocal) -> str:
     # Create student user
@@ -111,6 +116,7 @@ def student_token(client: TestClient, db: TestingSessionLocal) -> str:
         data={"username": "student", "password": "student123"},
     )
     return response.json()["access_token"]
+
 
 @pytest.fixture(scope="session")
 def librarian_token(client: TestClient, db: TestingSessionLocal) -> str:

@@ -2,6 +2,7 @@ from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
 from datetime import date
 
+
 def test_list_students_admin(client: TestClient, admin_token: str):
     response = client.get(
         "/api/v1/students",
@@ -9,6 +10,7 @@ def test_list_students_admin(client: TestClient, admin_token: str):
     )
     assert response.status_code == 200
     assert isinstance(response.json(), list)
+
 
 def test_list_students_teacher(client: TestClient, teacher_token: str):
     response = client.get(
@@ -18,6 +20,7 @@ def test_list_students_teacher(client: TestClient, teacher_token: str):
     assert response.status_code == 200
     assert isinstance(response.json(), list)
 
+
 def test_list_students_unauthorized(client: TestClient, student_token: str):
     response = client.get(
         "/api/v1/students",
@@ -25,6 +28,7 @@ def test_list_students_unauthorized(client: TestClient, student_token: str):
     )
     assert response.status_code == 403
     assert "Not enough permissions" in response.json()["detail"]
+
 
 def test_create_student_success(client: TestClient, admin_token: str):
     response = client.post(
@@ -49,6 +53,7 @@ def test_create_student_success(client: TestClient, admin_token: str):
     assert data["class_name"] == "Class 10"
     assert data["section"] == "A"
 
+
 def test_create_student_unauthorized(client: TestClient, teacher_token: str):
     response = client.post(
         "/api/v1/students",
@@ -68,6 +73,7 @@ def test_create_student_unauthorized(client: TestClient, teacher_token: str):
     )
     assert response.status_code == 403
     assert "Not enough permissions" in response.json()["detail"]
+
 
 def test_get_students_by_class_section(client: TestClient, admin_token: str):
     response = client.get(

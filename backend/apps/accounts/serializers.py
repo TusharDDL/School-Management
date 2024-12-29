@@ -8,9 +8,19 @@ User = get_user_model()
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['id', 'email', 'username', 'first_name', 'last_name', 'role',
-                 'phone', 'address', 'profile_picture', 'created_at']
-        read_only_fields = ['created_at']
+        fields = [
+            "id",
+            "email",
+            "username",
+            "first_name",
+            "last_name",
+            "role",
+            "phone",
+            "address",
+            "profile_picture",
+            "created_at",
+        ]
+        read_only_fields = ["created_at"]
 
 
 class UserCreateSerializer(serializers.ModelSerializer):
@@ -19,11 +29,20 @@ class UserCreateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['email', 'username', 'password', 'confirm_password', 'first_name',
-                 'last_name', 'role', 'phone', 'address']
+        fields = [
+            "email",
+            "username",
+            "password",
+            "confirm_password",
+            "first_name",
+            "last_name",
+            "role",
+            "phone",
+            "address",
+        ]
 
     def validate(self, data):
-        if data['password'] != data.pop('confirm_password'):
+        if data["password"] != data.pop("confirm_password"):
             raise serializers.ValidationError("Passwords do not match")
         return data
 
@@ -38,9 +57,17 @@ class StudentProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = StudentProfile
-        fields = ['id', 'user', 'admission_number', 'date_of_birth',
-                 'blood_group', 'parent', 'parent_id', 'created_at']
-        read_only_fields = ['created_at']
+        fields = [
+            "id",
+            "user",
+            "admission_number",
+            "date_of_birth",
+            "blood_group",
+            "parent",
+            "parent_id",
+            "created_at",
+        ]
+        read_only_fields = ["created_at"]
 
 
 class TeacherProfileSerializer(serializers.ModelSerializer):
@@ -48,9 +75,17 @@ class TeacherProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = TeacherProfile
-        fields = ['id', 'user', 'employee_id', 'date_of_birth',
-                 'qualification', 'experience_years', 'subjects', 'created_at']
-        read_only_fields = ['created_at']
+        fields = [
+            "id",
+            "user",
+            "employee_id",
+            "date_of_birth",
+            "qualification",
+            "experience_years",
+            "subjects",
+            "created_at",
+        ]
+        read_only_fields = ["created_at"]
 
 
 class LoginSerializer(serializers.Serializer):
@@ -64,7 +99,7 @@ class ChangePasswordSerializer(serializers.Serializer):
     confirm_password = serializers.CharField(write_only=True)
 
     def validate(self, data):
-        if data['new_password'] != data['confirm_password']:
+        if data["new_password"] != data["confirm_password"]:
             raise serializers.ValidationError("New passwords do not match")
         return data
 
@@ -72,7 +107,7 @@ class ChangePasswordSerializer(serializers.Serializer):
 class ProfileUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['first_name', 'last_name', 'phone', 'address', 'profile_picture']
+        fields = ["first_name", "last_name", "phone", "address", "profile_picture"]
 
 
 class PasswordResetRequestSerializer(serializers.Serializer):
@@ -85,6 +120,6 @@ class PasswordResetConfirmSerializer(serializers.Serializer):
     confirm_password = serializers.CharField(write_only=True)
 
     def validate(self, data):
-        if data['password'] != data['confirm_password']:
+        if data["password"] != data["confirm_password"]:
             raise serializers.ValidationError("Passwords do not match")
         return data

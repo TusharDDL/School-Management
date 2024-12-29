@@ -4,6 +4,7 @@ from pydantic import BaseModel
 from app.models.student import Gender, BloodGroup
 from app.schemas.base import BaseSchema
 
+
 class StudentBase(BaseModel):
     admission_number: str
     roll_number: str
@@ -20,8 +21,10 @@ class StudentBase(BaseModel):
     emergency_contact: Optional[str] = None
     medical_conditions: Optional[str] = None
 
+
 class StudentCreate(StudentBase):
     user_id: int
+
 
 class StudentUpdate(BaseModel):
     class_name: Optional[str] = None
@@ -34,8 +37,10 @@ class StudentUpdate(BaseModel):
     emergency_contact: Optional[str] = None
     medical_conditions: Optional[str] = None
 
+
 class StudentInDB(StudentBase, BaseSchema):
     user_id: int
+
 
 class StudentResponse(StudentBase, BaseSchema):
     user_id: int

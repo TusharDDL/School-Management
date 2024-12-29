@@ -4,6 +4,7 @@ from app.core.database import SessionLocal
 from app.core.auth import get_password_hash
 from app.models.user import User, UserRole
 
+
 async def create_superuser():
     db = SessionLocal()
     try:
@@ -29,6 +30,7 @@ async def create_superuser():
         print("Superuser created successfully")
     finally:
         db.close()
+
 
 if __name__ == "__main__":
     asyncio.run(create_superuser())
