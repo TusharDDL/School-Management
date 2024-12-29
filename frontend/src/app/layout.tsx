@@ -7,7 +7,7 @@ const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
   title: 'School Management System',
-  description: 'A comprehensive school management system built with Next.js and Django',
+  description: 'A comprehensive school management system',
 }
 
 export default function RootLayout({

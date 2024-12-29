@@ -1,12 +1,12 @@
-import type { Config } from 'tailwindcss'
-
-const config: Config = {
+/** @type {import('tailwindcss').Config} */
+module.exports = {
   darkMode: ["class"],
   content: [
-    './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
-    './src/components/**/*.{js,ts,jsx,tsx,mdx}',
-    './src/app/**/*.{js,ts,jsx,tsx,mdx}',
-  ],
+    './pages/**/*.{ts,tsx}',
+    './components/**/*.{ts,tsx}',
+    './app/**/*.{ts,tsx}',
+    './src/**/*.{ts,tsx}',
+],
   theme: {
     container: {
       center: true,
@@ -52,53 +52,23 @@ const config: Config = {
         },
       },
       borderRadius: {
-        none: "0",
-        small: "0.25rem",
-        medium: "0.5rem",
-        large: "1rem",
-        full: "9999px",
-      },
-      fontFamily: {
-        inter: ["var(--font-inter)", "sans-serif"],
-        roboto: ["var(--font-roboto)", "sans-serif"],
-        "open-sans": ["var(--font-open-sans)", "sans-serif"],
-        lato: ["var(--font-lato)", "sans-serif"],
-        poppins: ["var(--font-poppins)", "sans-serif"],
-      },
-      fontSize: {
-        small: ["0.875rem", "1.25rem"],
-        medium: ["1rem", "1.5rem"],
-        large: ["1.125rem", "1.75rem"],
-      },
-      spacing: {
-        compact: "0.5rem",
-        comfortable: "1rem",
-        spacious: "1.5rem",
+        lg: "var(--radius)",
+        md: "calc(var(--radius) - 2px)",
+        sm: "calc(var(--radius) - 4px)",
       },
       keyframes: {
         "accordion-down": {
-          from: { height: "0" },
+          from: { height: 0 },
           to: { height: "var(--radix-accordion-content-height)" },
         },
         "accordion-up": {
           from: { height: "var(--radix-accordion-content-height)" },
-          to: { height: "0" },
-        },
-        bounce: {
-          "0%, 100%": {
-            transform: "translateY(-25%)",
-            animationTimingFunction: "cubic-bezier(0.8, 0, 1, 1)",
-          },
-          "50%": {
-            transform: "translateY(0)",
-            animationTimingFunction: "cubic-bezier(0, 0, 0.2, 1)",
-          },
+          to: { height: 0 },
         },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
-        bounce: "bounce 1s infinite",
       },
     },
   },

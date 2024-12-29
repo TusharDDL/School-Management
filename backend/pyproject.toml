@@ -1,0 +1,26 @@
+[tool.poetry]
+name = "school-management-backend"
+version = "0.1.0"
+description = "School Management System Backend"
+authors = ["OpenHands <openhands@all-hands.dev>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.9"
+fastapi = "^0.115.6"
+uvicorn = "^0.34.0"
+python-jose = {extras = ["cryptography"], version = "^3.3.0"}
+passlib = {extras = ["bcrypt"], version = "^1.7.4"}
+python-multipart = "^0.0.20"
+psycopg2-binary = "^2.9.10"
+sqlalchemy = "^2.0.36"
+alembic = "^1.14.0"
+pytest = "^8.3.4"
+pytest-asyncio = "^0.25.0"
+httpx = "^0.28.1"
+pytest-cov = "^6.0.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
