@@ -5,8 +5,18 @@ from apps.academic.models import Class, Section
 
 
 class FeeCategory(models.Model):
+    CATEGORY_CHOICES = [
+        ('tuition', 'Tuition Fee'),
+        ('exam', 'Examination Fee'),
+        ('transport', 'Transport Fee'),
+        ('library', 'Library Fee'),
+        ('other', 'Other Fee')
+    ]
+    
     name = models.CharField(max_length=100)
+    category_type = models.CharField(max_length=20, choices=CATEGORY_CHOICES, default='tuition')
     description = models.TextField(blank=True)
+    is_optional = models.BooleanField(default=False, help_text="Whether this fee is optional")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

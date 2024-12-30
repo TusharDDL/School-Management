@@ -1,34 +1,37 @@
 import os
 from datetime import timedelta
 from pathlib import Path
-from dotenv import load_dotenv
-
-# Load environment variables
-load_dotenv()
+from decouple import config, Csv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
 # Quick-start development settings - unsuitable for production
-SECRET_KEY = os.getenv("SECRET_KEY")
+SECRET_KEY = config('SECRET_KEY', default='django-insecure-default-key-change-in-production')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv("DEBUG", "False") == "True"
+DEBUG = config('DEBUG', default=False, cast=bool)
 
-ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "").split(",")
+ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost,127.0.0.1', cast=Csv())
 
 
 # Application definition
 SHARED_APPS = (
     "django_tenants",
-    "apps.core",
     "django.contrib.contenttypes",
-    "django.contrib.admin",
     "django.contrib.auth",
+    "apps.accounts",
+    "apps.core",
+    "django.contrib.admin",
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "rest_framework",
+    "rest_framework_simplejwt",
+    "corsheaders",
+    "django_filters",
+    "drf_spectacular",
 )
 
 # Configure logging
@@ -80,8 +83,10 @@ LOGGING = {
 
 TENANT_APPS = (
     "django.contrib.contenttypes",
-    "django.contrib.admin",
     "django.contrib.auth",
+    "apps.accounts",
+    "apps.core",
+    "django.contrib.admin",
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
@@ -92,10 +97,10 @@ TENANT_APPS = (
     "django_filters",
     "drf_spectacular",
     # Local apps
-    "apps.accounts",
     "apps.academic",
     "apps.finance",
     "apps.communication",
+    "apps.library",
 )
 
 INSTALLED_APPS = list(SHARED_APPS) + [
@@ -139,11 +144,11 @@ WSGI_APPLICATION = "config.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django_tenants.postgresql_backend",
-        "NAME": os.getenv("DB_NAME"),
-        "USER": os.getenv("DB_USER"),
-        "PASSWORD": os.getenv("DB_PASSWORD"),
-        "HOST": os.getenv("DB_HOST"),
-        "PORT": os.getenv("DB_PORT"),
+        "NAME": config('DB_NAME', default='school_management'),
+        "USER": config('DB_USER', default='school_user'),
+        "PASSWORD": config('DB_PASSWORD', default='secure_password'),
+        "HOST": config('DB_HOST', default='localhost'),
+        "PORT": config('DB_PORT', default='5432'),
     }
 }
 
@@ -214,18 +219,18 @@ REST_FRAMEWORK = {
 # JWT Settings
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(
-        hours=int(os.getenv("JWT_ACCESS_TOKEN_LIFETIME", 5))
+        hours=config('JWT_ACCESS_TOKEN_LIFETIME', default=5, cast=int)
     ),
     "REFRESH_TOKEN_LIFETIME": timedelta(
-        days=int(os.getenv("JWT_REFRESH_TOKEN_LIFETIME", 1))
+        days=config('JWT_REFRESH_TOKEN_LIFETIME', default=1, cast=int)
     ),
     "ROTATE_REFRESH_TOKENS": True,
     "BLACKLIST_AFTER_ROTATION": True,
-    "SIGNING_KEY": os.getenv("JWT_SECRET_KEY", SECRET_KEY),
+    "SIGNING_KEY": config('JWT_SECRET_KEY', default=SECRET_KEY),
 }
 
 # CORS settings
-CORS_ALLOWED_ORIGINS = os.getenv("CORS_ALLOWED_ORIGINS", "").split(",")
+CORS_ALLOWED_ORIGINS = config('CORS_ALLOWED_ORIGINS', default='http://localhost:3000', cast=Csv())
 CORS_ALLOW_CREDENTIALS = True
 
 # API Documentation
@@ -237,20 +242,18 @@ SPECTACULAR_SETTINGS = {
 }
 
 # Email settings
-EMAIL_BACKEND = os.getenv(
-    "EMAIL_BACKEND", "django.core.mail.backends.console.EmailBackend"
-)
-EMAIL_HOST = os.getenv("EMAIL_HOST")
-EMAIL_PORT = int(os.getenv("EMAIL_PORT", 587))
-EMAIL_USE_TLS = os.getenv("EMAIL_USE_TLS", "True") == "True"
-EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
-EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
-DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", "noreply@schoolmanagement.com")
-FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:3000")
+EMAIL_BACKEND = config('EMAIL_BACKEND', default='django.core.mail.backends.console.EmailBackend')
+EMAIL_HOST = config('EMAIL_HOST', default='smtp.gmail.com')
+EMAIL_PORT = config('EMAIL_PORT', default=587, cast=int)
+EMAIL_USE_TLS = config('EMAIL_USE_TLS', default=True, cast=bool)
+EMAIL_HOST_USER = config('EMAIL_HOST_USER', default='')
+EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='')
+DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL', default='noreply@schoolmanagement.com')
+FRONTEND_URL = config('FRONTEND_URL', default='http://localhost:3000')
 
 # Celery settings
-CELERY_BROKER_URL = os.getenv("REDIS_URL")
-CELERY_RESULT_BACKEND = os.getenv("REDIS_URL")
+CELERY_BROKER_URL = config('REDIS_URL', default='redis://localhost:6379/0')
+CELERY_RESULT_BACKEND = config('REDIS_URL', default='redis://localhost:6379/0')
 CELERY_ACCEPT_CONTENT = ["json"]
 CELERY_TASK_SERIALIZER = "json"
 CELERY_RESULT_SERIALIZER = "json"

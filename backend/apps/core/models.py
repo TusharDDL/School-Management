@@ -59,6 +59,7 @@ class School(TenantMixin):
         return self.name
         
     def save(self, *args, **kwargs):
+        from .exceptions import SchoolApprovalError, FreeTierLimitExceeded, EmailDeliveryError
         import logging
         logger = logging.getLogger('apps.core')
         
@@ -67,11 +68,11 @@ class School(TenantMixin):
         # Validate student and staff counts
         if self.student_strength > 500:
             logger.error(f"School {self.name} exceeded free tier student limit: {self.student_strength}")
-            raise ValueError("Free tier allows maximum of 500 students")
+            raise FreeTierLimitExceeded("Free tier allows maximum of 500 students")
         
         if self.staff_count > 50:
             logger.error(f"School {self.name} exceeded free tier staff limit: {self.staff_count}")
-            raise ValueError("Free tier allows maximum of 50 staff members")
+            raise FreeTierLimitExceeded("Free tier allows maximum of 50 staff members")
             
         try:
             super().save(*args, **kwargs)
@@ -120,10 +121,34 @@ class School(TenantMixin):
                     
                 except User.DoesNotExist as e:
                     logger.error(f"Failed to create admin user for school {self.name}: {str(e)}")
-                    raise
+                    raise SchoolApprovalError(f"Failed to create admin user: {str(e)}")
                 except Exception as e:
                     logger.error(f"Error in school approval process for {self.name}: {str(e)}")
-                    raise
+                    raise SchoolApprovalError(f"School approval process failed: {str(e)}")
+
+                try:
+                    # Send credentials email
+                    from django.core.mail import send_mail
+                    from django.template.loader import render_to_string
+                    
+                    context = {
+                        'school_name': self.name,
+                        'username': admin_user.username,
+                        'password': password,
+                        'login_url': settings.FRONTEND_URL + '/login'
+                    }
+                    
+                    send_mail(
+                        subject=f'Welcome to School Management System - {self.name}',
+                        message=render_to_string('emails/school_approved.txt', context),
+                        from_email=settings.DEFAULT_FROM_EMAIL,
+                        recipient_list=[self.principal_email],
+                        html_message=render_to_string('emails/school_approved.html', context)
+                    )
+                    logger.info(f"Sent welcome email to school admin: {self.principal_email}")
+                except Exception as e:
+                    logger.error(f"Failed to send welcome email to {self.principal_email}: {str(e)}")
+                    raise EmailDeliveryError(f"Failed to send welcome email: {str(e)}")
         except Exception as e: 
             logger.error(f"Error saving school {self.name}: {str(e)}")
             raise

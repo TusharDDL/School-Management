@@ -7,9 +7,43 @@ class AcademicYear(models.Model):
     name = models.CharField(max_length=50)
     start_date = models.DateField()
     end_date = models.DateField()
+    start_month = models.IntegerField(
+        choices=[(4, 'April'), (6, 'June')],
+        default=4,
+        help_text="Month when academic year starts"
+    )
+    end_month = models.IntegerField(
+        choices=[(3, 'March'), (5, 'May')],
+        default=3,
+        help_text="Month when academic year ends"
+    )
     is_active = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    
+    def clean(self):
+        from django.core.exceptions import ValidationError
+        from .exceptions import AcademicYearConfigError
+        import logging
+        logger = logging.getLogger('apps.academic')
+        
+        # Validate start and end months form valid pairs
+        valid_pairs = [(4, 3), (6, 5)]  # April-March or June-May
+        if (self.start_month, self.end_month) not in valid_pairs:
+            error_msg = f"Invalid academic year configuration: {self.get_start_month_display()}-{self.get_end_month_display()}"
+            logger.error(error_msg)
+            raise AcademicYearConfigError(error_msg)
+            
+        # Validate dates align with configured months
+        if self.start_date.month != self.start_month:
+            error_msg = f"Start date month ({self.start_date.month}) does not match configured start month ({self.start_month})"
+            logger.error(error_msg)
+            raise ValidationError(error_msg)
+            
+        if self.end_date.month != self.end_month:
+            error_msg = f"End date month ({self.end_date.month}) does not match configured end month ({self.end_month})"
+            logger.error(error_msg)
+            raise ValidationError(error_msg)
 
     def __str__(self):
         return self.name
