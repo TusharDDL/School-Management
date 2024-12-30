@@ -2,6 +2,7 @@ from sqlalchemy import Column, String, Boolean, Enum
 from app.models.base import BaseModel
 import enum
 
+
 class UserRole(str, enum.Enum):
     ADMIN = "admin"
     TEACHER = "teacher"
@@ -9,6 +10,7 @@ class UserRole(str, enum.Enum):
     PARENT = "parent"
     LIBRARIAN = "librarian"
     ACCOUNTANT = "accountant"
+
 
 class User(BaseModel):
     __tablename__ = "users"

@@ -4,6 +4,7 @@ from pydantic import BaseModel
 from app.models.library import BookStatus, CirculationStatus
 from app.schemas.base import BaseSchema
 
+
 class BookBase(BaseModel):
     title: str
     isbn: str
@@ -20,8 +21,10 @@ class BookBase(BaseModel):
     cover_image: Optional[str] = None
     status: BookStatus = BookStatus.AVAILABLE
 
+
 class BookCreate(BookBase):
     pass
+
 
 class BookUpdate(BaseModel):
     title: Optional[str] = None
@@ -37,11 +40,14 @@ class BookUpdate(BaseModel):
     cover_image: Optional[str] = None
     status: Optional[BookStatus] = None
 
+
 class BookInDB(BookBase, BaseSchema):
     pass
 
+
 class BookResponse(BookBase, BaseSchema):
     pass
+
 
 class LibraryMemberBase(BaseModel):
     user_id: int
@@ -52,8 +58,10 @@ class LibraryMemberBase(BaseModel):
     max_books: int
     is_active: bool = True
 
+
 class LibraryMemberCreate(LibraryMemberBase):
     pass
+
 
 class LibraryMemberUpdate(BaseModel):
     membership_type: Optional[str] = None
@@ -61,11 +69,14 @@ class LibraryMemberUpdate(BaseModel):
     max_books: Optional[int] = None
     is_active: Optional[bool] = None
 
+
 class LibraryMemberInDB(LibraryMemberBase, BaseSchema):
     pass
 
+
 class LibraryMemberResponse(LibraryMemberBase, BaseSchema):
     pass
+
 
 class BookCirculationBase(BaseModel):
     book_id: int
@@ -77,8 +88,10 @@ class BookCirculationBase(BaseModel):
     status: CirculationStatus = CirculationStatus.ISSUED
     remarks: Optional[str] = None
 
+
 class BookCirculationCreate(BookCirculationBase):
     pass
+
 
 class BookCirculationUpdate(BaseModel):
     return_date: Optional[date] = None
@@ -86,30 +99,38 @@ class BookCirculationUpdate(BaseModel):
     status: Optional[CirculationStatus] = None
     remarks: Optional[str] = None
 
+
 class BookCirculationInDB(BookCirculationBase, BaseSchema):
     pass
+
 
 class BookCirculationResponse(BookCirculationBase, BaseSchema):
     book: BookResponse
     member: LibraryMemberResponse
+
 
 class BookCategoryBase(BaseModel):
     name: str
     description: Optional[str] = None
     parent_id: Optional[int] = None
 
+
 class BookCategoryCreate(BookCategoryBase):
     pass
+
 
 class BookCategoryUpdate(BaseModel):
     name: Optional[str] = None
     description: Optional[str] = None
     parent_id: Optional[int] = None
 
+
 class BookCategoryInDB(BookCategoryBase, BaseSchema):
     pass
 
+
 class BookCategoryResponse(BookCategoryBase, BaseSchema):
-    subcategories: List['BookCategoryResponse'] = []
+    subcategories: List["BookCategoryResponse"] = []
+
 
 BookCategoryResponse.model_rebuild()

@@ -1,7 +1,18 @@
-from sqlalchemy import Column, String, Integer, Date, ForeignKey, Enum, Float, Boolean, Text
+from sqlalchemy import (
+    Column,
+    String,
+    Integer,
+    Date,
+    ForeignKey,
+    Enum,
+    Float,
+    Boolean,
+    Text,
+)
 from sqlalchemy.orm import relationship
 from app.models.base import BaseModel
 import enum
+
 
 class BookStatus(str, enum.Enum):
     AVAILABLE = "available"
@@ -10,11 +21,13 @@ class BookStatus(str, enum.Enum):
     DAMAGED = "damaged"
     UNDER_REPAIR = "under_repair"
 
+
 class CirculationStatus(str, enum.Enum):
     ISSUED = "issued"
     RETURNED = "returned"
     OVERDUE = "overdue"
     LOST = "lost"
+
 
 class Book(BaseModel):
     __tablename__ = "books"
@@ -34,6 +47,7 @@ class Book(BaseModel):
     cover_image = Column(String)
     status = Column(Enum(BookStatus), default=BookStatus.AVAILABLE)
 
+
 class LibraryMember(BaseModel):
     __tablename__ = "library_members"
 
@@ -46,6 +60,7 @@ class LibraryMember(BaseModel):
     is_active = Column(Boolean, default=True)
 
     user = relationship("User", backref="library_member")
+
 
 class BookCirculation(BaseModel):
     __tablename__ = "book_circulations"
@@ -61,6 +76,7 @@ class BookCirculation(BaseModel):
 
     book = relationship("Book", backref="circulations")
     member = relationship("LibraryMember", backref="circulations")
+
 
 class BookCategory(BaseModel):
     __tablename__ = "book_categories"

@@ -15,10 +15,10 @@ from app.models.user import User, UserRole
 
 router = APIRouter()
 
+
 @router.post("/token")
 async def login_for_access_token(
-    form_data: OAuth2PasswordRequestForm = Depends(),
-    db: Session = Depends(get_db)
+    form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)
 ) -> dict[str, Any]:
     user = db.query(User).filter(User.username == form_data.username).first()
     if not user or not verify_password(form_data.password, user.hashed_password):
@@ -33,6 +33,7 @@ async def login_for_access_token(
     )
     return {"access_token": access_token, "token_type": "bearer"}
 
+
 @router.post("/register", response_model=dict)
 async def register_user(
     username: str,
@@ -41,7 +42,7 @@ async def register_user(
     first_name: str,
     last_name: str,
     role: UserRole,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
 ) -> dict[str, Any]:
     # Check if user already exists
     if db.query(User).filter(User.username == username).first():
@@ -54,7 +55,7 @@ async def register_user(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Email already registered",
         )
-    
+
     # Create new user
     user = User(
         username=username,
@@ -67,5 +68,5 @@ async def register_user(
     db.add(user)
     db.commit()
     db.refresh(user)
-    
+
     return {"message": "User registered successfully"}

@@ -3,10 +3,12 @@ from sqlalchemy.orm import relationship
 from app.models.base import BaseModel
 import enum
 
+
 class Gender(str, enum.Enum):
     MALE = "male"
     FEMALE = "female"
     OTHER = "other"
+
 
 class BloodGroup(str, enum.Enum):
     A_POSITIVE = "A+"
@@ -17,6 +19,7 @@ class BloodGroup(str, enum.Enum):
     O_NEGATIVE = "O-"
     AB_POSITIVE = "AB+"
     AB_NEGATIVE = "AB-"
+
 
 class Student(BaseModel):
     __tablename__ = "students"

@@ -1,0 +1,21 @@
+Welcome to School Management System
+
+Dear Principal,
+
+Congratulations! Your school {{ school_name }} has been approved on our School Management System.
+
+Here are your admin account credentials:
+Username: {{ username }}
+Password: {{ password }}
+
+Please login at: {{ login_url }}
+
+For security reasons, we recommend changing your password after your first login.
+
+If you have any questions or need assistance, please don't hesitate to contact our support team.
+
+Best regards,
+School Management System Team
+
+---
+This is an automated message. Please do not reply to this email.
